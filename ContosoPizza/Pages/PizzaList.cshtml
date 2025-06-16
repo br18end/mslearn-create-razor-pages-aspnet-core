@@ -1,0 +1,82 @@
+﻿@page "{id:int?}"
+@model ContosoPizza.Pages.PizzaListModel
+@{
+    ViewData["Title"] = "Pizza List 🍕";
+}
+
+<!-- New Pizza form will go here -->
+<form method="post" class="d-flex align-items-end">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="NewPizza.Id" />
+    <div class="form-group m-2">
+        <label asp-for="NewPizza.Name" class="control-label"></label>
+        <input asp-for="NewPizza.Name" class="form-control" type="text" placeholder="Enter the name of your pizza" maxlength="30" />
+        <span asp-validation-for="NewPizza.Name" class="text-danger" />
+    </div>
+    <div class="form-group m-2">
+        <label asp-for="NewPizza.Size" class="control-label"></label>
+        <select asp-for="NewPizza.Size" class="form-control" id="PizzaSize">
+            <option value="">Select the size</option>
+            <option value="Small">Small</option>
+            <option value="Medium">Medium</option>
+            <option value="Large">Large</option>
+        </select>
+        <span asp-validation-for="NewPizza.Size" class="text-danger"></span>
+    </div>
+    <div class="form-group form-check m-2">
+        <label class="form-check-label">
+            <input class="form-check-input" asp-for="NewPizza.IsGlutenFree" />
+            @Html.DisplayNameFor(model => model.NewPizza.IsGlutenFree)
+        </label>
+    </div>
+    <div class="form-group m-2">
+        <label asp-for="NewPizza.Price" class="control-label"></label>
+        <input asp-for="NewPizza.Price" class="form-control" type="number" min="0.01" max="9999.99" step="0.01" placeholder="Enter a price" />
+        <span asp-validation-for="NewPizza.Price" class="text-danger"></span>
+    </div>
+    <div class="form-group m-2">
+        <input type="submit" value="@(Model.NewPizza.Id > 0 ? "Update Pizza!" : "Create Pizza!")" class="btn btn-primary" />
+    </div>
+</form>
+
+<!-- List of pizzas will go here -->
+<table class="table mt-5">
+    <thead>
+        <tr>
+            <th scope="col">@Html.DisplayNameFor(model => model.NewPizza.Name)</th>
+            <th scope="col">@Html.DisplayNameFor(model => model.NewPizza.Size)</th>
+            <th scope="col">@Html.DisplayNameFor(model => model.NewPizza.IsGlutenFree)</th>
+            <th scope="col">@Html.DisplayNameFor(model => model.NewPizza.Price)</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.PizzaList == null || !Model.PizzaList.Any())
+        {
+            <tr>
+                <td colspan="6" class="text-center">No pizzas available.</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var pizza in Model.PizzaList)
+            {
+                <tr>
+                    <td>@pizza.Name</td>
+                    <td>@pizza.Size</td>
+                    <td>@(pizza.IsGlutenFree ? "✔️" : string.Empty)</td>
+                    <td>@($"{pizza.Price:C}")</td>
+                    <td>
+                        <a class="btn btn-primary" asp-page="./PizzaList" asp-route-id="@pizza.Id">Edit</a>
+                    </td>
+                    <td>
+                        <form method="post" asp-page-handler="Delete" asp-route-id="@pizza.Id">
+                            <button class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
